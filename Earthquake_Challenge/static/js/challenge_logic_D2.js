@@ -15,6 +15,13 @@ let satelliteStreets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/sate
   accessToken: API_KEY
 });
 
+// We create the third tile layer that will be the background of our map.
+let dark = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/dark-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery (c) <a href="https://www.mapbox.com/">Mapbox</a>',
+  maxZoom: 18,
+  accessToken: API_KEY
+});
+
 // Create the map object with center, zoom level and default layer.
 let map = L.map('mapid', {
   center: [40.7, -94.5],
@@ -25,7 +32,8 @@ let map = L.map('mapid', {
 // Create a base layer that holds all three maps.
 let baseMaps = {
   "Streets": streets,
-  "Satellite": satelliteStreets
+  "Satellite": satelliteStreets,
+  "Dark": dark
 };
 
 // Create the earthquake layer for our map.
@@ -133,10 +141,10 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
 
     // 5. Change the color function to use three colors for the major earthquakes based on the magnitude of the earthquake.
     function getColor(magnitude) {
-      if (magnitude > 6 ) {
+      if (magnitude > 6) {
         return "#700101";
       }
-      
+
       if (magnitude > 5) {
         return "#ea2c2c";
       }
@@ -156,7 +164,7 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
     // 7. Creating a GeoJSON layer with the retrieved data that adds a circle to the map 
     // sets the style of the circle, and displays the magnitude and location of the earthquake
     //  after the marker has been created and styled.
-    L.geoJson(majorData, {
+    L.geoJSON(majorData, {
 
       // We turn each feature into a circleMarker on the map.
       pointToLayer: function (feature, latlng) {
@@ -191,7 +199,7 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
     let div = L.DomUtil.create("div", "info legend");
 
     const magnitudes = [0, 1, 2, 3, 4, 5];
-    const colors = [
+    var colors = [
       "#98ee00",
       "#d4ee00",
       "#eecc00",
@@ -202,8 +210,8 @@ d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_week.geoj
 
     // Looping through our intervals to generate a label with a colored square for each interval.
     for (var i = 0; i < magnitudes.length; i++) {
-      console.log(colors[i]);
-      div.innerHTML +=
+       console.log(colors[i]);
+       div.innerHTML +=
         "<i style='background: " + colors[i] + "'></i> " +
         magnitudes[i] + (magnitudes[i + 1] ? "&ndash;" + magnitudes[i + 1] + "<br>" : "+");
     }
